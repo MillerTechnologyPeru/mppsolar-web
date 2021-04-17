@@ -7,13 +7,18 @@
 
 import Foundation
 
-struct Configuration: Codable, Equatable, Hashable {
+/// MPP Solar Web Server configuration
+public struct Configuration: Codable, Equatable, Hashable {
     
-    var uuid: UUID
+    // MARK: - Properties
     
-    var device: String
+    public let uuid: UUID
     
-    init(uuid: UUID = UUID(),
+    public var device: String
+    
+    // MARK: - Initialization
+    
+    public init(uuid: UUID = UUID(),
          device: String = "/dev/hidraw0") {
         self.uuid = uuid
         self.device = device

@@ -7,6 +7,7 @@
 
 import Foundation
 import Kitura
+import KituraNet
 #if os(Linux)
 import NetService
 #endif
@@ -51,7 +52,7 @@ public final class WebServer {
         let netService = NetService(
             domain: "local.",
             type: "_lock._tcp.",
-            name: configuration.uuid,
+            name: configuration.uuid.uuidString,
             port: Int32(port)
         )
         
