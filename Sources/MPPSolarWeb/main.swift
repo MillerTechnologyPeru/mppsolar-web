@@ -35,7 +35,8 @@ struct MPPSolarWebServerTool: ParsableCommand {
             device: device
         )
         let server = WebServer(configuration: configuration)
-        server.run()
+        server.log = { print($0) }
+        server.start()
         RunLoop.main.run()
     }
 }

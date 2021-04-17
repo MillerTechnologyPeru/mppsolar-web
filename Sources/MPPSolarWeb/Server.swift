@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import MPPSolar
 import Kitura
 import KituraNet
 #if os(Linux)
@@ -20,8 +21,6 @@ public final class WebServer {
     public let configuration: Configuration
     
     public var log: ((String) -> ())?
-    
-    public var port: Int = 8080
     
     internal lazy var jsonEncoder = JSONEncoder()
     
@@ -42,26 +41,55 @@ public final class WebServer {
     
     // MARK: - Methods
     
-    private func setupRouter() {
+    public func start() {
         
-    }
-    
-    public func run() {
+        precondition(httpServer == nil)
+        precondition(netService == nil)
         
         // Bonjour
         let netService = NetService(
             domain: "local.",
             type: "_lock._tcp.",
             name: configuration.uuid.uuidString,
-            port: Int32(port)
+            port: Int32(configuration.port)
         )
         
         netService.publish(options: [])
         self.netService = netService
         
         // Kiture
-        httpServer = Kitura.addHTTPServer(onPort: port, with: router)
-        log?("Started HTTP Server on port \(port)")
-        Kitura.run()
+        httpServer = Kitura.addHTTPServer(onPort: configuration.port, with: router)
+        log?("Started HTTP Server on port \(configuration.port)")
+        Kitura.start()
+    }
+    
+    private func setupRouter() {
+        router.get("/command/:command", handler: self.command)
+    }
+    
+    private func command(
+        request: RouterRequest,
+        response: RouterResponse,
+        next: @escaping () -> Void) throws -> Void {
+        
+        guard let command = request.parameters["command"] else {
+            response.status(.badRequest)
+            return
+        }
+        
+        do {
+            guard let solarDevice = MPPSolar(path: configuration.device) else {
+                log?("Could not connect to device \(configuration.device)")
+                response.status(.internalServerError)
+                return
+            }
+            let responseString = try solarDevice.send(command)
+            response.send(responseString)
+            response.status(.OK)
+        }
+        catch {
+            log?("Error: \(error)")
+            response.status(.badRequest)
+        }
     }
 }

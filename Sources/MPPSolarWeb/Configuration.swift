@@ -16,11 +16,15 @@ public struct Configuration: Codable, Equatable, Hashable {
     
     public var device: String
     
+    public var port: Int
+    
     // MARK: - Initialization
     
     public init(uuid: UUID = UUID(),
-         device: String = "/dev/hidraw0") {
+         device: String = "/dev/hidraw0",
+         port: Int = 8080) {
         self.uuid = uuid
         self.device = device
+        self.port = port
     }
 }
