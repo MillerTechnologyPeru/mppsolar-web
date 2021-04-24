@@ -26,7 +26,7 @@ struct MPPSolarWebServerTool: ParsableCommand {
     }
     
     func run() throws {
-        print("Will start MPP Solar server")
+        print("Starting MPP Solar web server")
         let uuid = self.uuid ?? UUID()
         print("UUID: \(uuid)")
         print("Device: \(device)")

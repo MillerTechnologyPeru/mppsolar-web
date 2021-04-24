@@ -3,7 +3,9 @@ import PackageDescription
 
 let package = Package(
     name: "mppsolar-web",
-    platforms: [.macOS(.v10_12)],
+    platforms: [
+        .macOS(.v10_12)
+    ],
     products: [
         .executable(
             name: "mppsolar-web",
@@ -18,6 +20,10 @@ let package = Package(
         .package(
             url: "https://github.com/apple/swift-argument-parser",
             .upToNextMinor(from: "0.1.0")
+        ),
+        .package(
+            url: "https://github.com/Bouke/NetService.git",
+            from: "0.7.0"
         ),
         // Kitura
         .package(
@@ -44,3 +50,10 @@ let package = Package(
         )
     ]
 )
+
+#if os(Linux)
+package.targets
+    .first(where: { $0.name == "MPPSolarWeb" })?
+    .dependencies
+    .append("NetService")
+#endif
